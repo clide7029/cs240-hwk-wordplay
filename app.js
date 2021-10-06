@@ -10,7 +10,6 @@ setUpGame();
 // start the game immediately when the page loads
 document.addEventListener('DOMContentLoaded', startGame());
 
-
 /* 
 initialize one-time setup of important data structures
 */
@@ -35,6 +34,7 @@ function setUpGame() {
 checks whether a candidate word is a subword the first word 
 @param word the root word
 @param subword the candidate subword
+@return BOOLEAN if the candidate word is a sub-word of word
  */
 function isSubWord(word, subword) {
     let w = word;
@@ -161,10 +161,9 @@ function endGame(word) {
 }
 
 /* 
-start the game and select a random word
+select a random word and start the game
  */
 function startGame() {
-
     // pick a random target word
     word = getRandomWord();
 
