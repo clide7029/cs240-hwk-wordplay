@@ -4,6 +4,8 @@ var sub_words = new Array();
 var guessed = new Map();
 
 
+document.addEventListener('DOMContentLoaded', startGame());
+
 function getRootWords() {
     // find possible root words (contain 6 letters)
     for (i = 0; i < dict.length; i++) {
@@ -41,8 +43,50 @@ function trimDict(word, dict) {
     return subwords;
 }
 
+function scramble(word) {
+    arr = word.split('');
+    for (let i = 0; i < arr.length - 1; i++) {
+        idx = Math.floor(Math.random() * (word.length));
 
+        char = arr[i];
+        arr[i] = arr[idx];
+        arr[idx] = char;
+        word.replace(char, word[idx]);
+    }
 
+    return arr.join('');
+}
+
+function printGame(word) {
+    console.clear();
+    console.log("Available letters: " + word);
+    for (let i = 0; i < sub_words.length; i++) {
+        if (guessed.get(sub_words[i])) {
+            console.log(sub_words[i]);
+        } else {
+            blank = "";
+            for (let j = 0; j < sub_words[i].length; j++) {
+                blank += '-';
+            }
+            console.log(blank);
+        }
+
+    }
+}
+
+function endGame(word) {
+    console.clear();
+    console.log("the word was: " + word);
+    for (let i = 0; i < sub_words.length; i++) {
+        console.log(sub_words[i]);
+    }
+    console.log("Congratulation, you guessed " + guessed.size + " / " + sub_words.length + " words correctly")
+
+    sub_words.splice(0, sub_words.length);
+    guessed.clear();
+
+    return confirm("want to try again?");
+}
 
 function startGame() {
 
@@ -55,33 +99,45 @@ function startGame() {
     getRootWords();
 
     let r = Math.floor(Math.random() * (root_words.length - 1));
+    // let word = "bat";
     let word = root_words[r];
     sub_words = trimDict(word, dict);
 
-    gameLoop(word);
+    if (gameLoop(word)) {
+        location.reload(true);
+        startGame();
+    }
 
 }
 
 
 function gameLoop(word) {
 
+    scram = scramble(word);
+    printGame(scram);
 
     while (true) {
         guess = prompt("enter a guess:");
         if (guess === null || guess === "quit") {
-            console.log("canceled");
-            break;
+            return endGame(word);
         }
 
+        // user wants to scramble word
         if (guess === "*") {
             scram = scramble(scram);
             alert("available letters have been scrambled!");
         }
+
+        // update list of guessed
         if (dict.includes(guess)) {
             guessed.set(guess, true);
             alert("you guessed: " + guess);
         }
 
+        if (guessed.size === sub_words.length) {
+            endGame(word);
+        }
+        printGame(scram);
     }
 
 
